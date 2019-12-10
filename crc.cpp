@@ -1,7 +1,7 @@
 /*
-Cyclic redundancy check (CRC):
-error-detecting codes which are additional data added to a given digital message to help us detect if any error has occurred during transmission of the message.
-Basic approach used for error detection is the use of redundancy bits, where additional bits are added to facilitate detection of errors.
+Verificação cíclica de redundância (CRC):
+Código de detecção de erros que são dados adicionais adicionados a uma determinada mensagem digital para nos ajudar a detectar se ocorreu algum erro durante a transmissão da mensagem.
+A abordagem básica usada para a detecção de erros é o uso de bits de redundância, onde bits adicionais são adicionados para facilitar a detecção de erros.
 
 */
 
@@ -9,15 +9,15 @@ Basic approach used for error detection is the use of redundancy bits, where add
 
 using namespace std;
 
-string xorfun( string encoded , string crc)							//Bitwise XOR operation
+string xorfunction( string encoded , string crc)							//Operação XOR bit a bit
 {
 	int crclen = crc.length();
 
-	for ( int i = 0 ; i <= (encoded.length() - crclen) ; )			// performing bitwise xor operation
+	for ( int i = 0 ; i <= (encoded.length() - crclen) ; )			// executando operação xor bit a bit
 	{																// " 0 xor 0 = 0"     " 1 xor 1 = 0 "
 		for( int j=0 ; j < crclen ; j++)							// " 0 xor 1 = 1 "    " 1 xor 0 = 1"
 		{
-			encoded[i+j] = encoded[i+j] == crc[j] ? '0' : '1' ;			//if encoded bit and crc bit are same , then replace it with zero
+			encoded[i+j] = encoded[i+j] == crc[j] ? '0' : '1' ;			//se bit codificado e bit crc forem iguais, substitua-o por zero
 		}
 	for( ; i< encoded.length() && encoded[i] != '1' ; i++) ;
 
@@ -29,48 +29,47 @@ string xorfun( string encoded , string crc)							//Bitwise XOR operation
 int main()
 {
 	string data , crc , encoded = "";
-	cout<<endl<<"-----------Sender Side --------------"<<endl;
-	cout<<"Enter Data bits: "<<endl;
-	cin>>data;														//data bits need to be transmitted
+	cout<<endl<<"-----------Remetente --------------"<<endl;
+	cout<<"Inserir bits de dados: "<<endl;
+	cin>>data;														//bits de dados a serem transmitidos
 
-	cout<<"Enter Generator: "<<endl;
-	cin>>crc;														//crc - genearator polynomial ( agreed by sender & reciever)
+	cout<<"Digite o polimônio gerador: "<<endl;
+	cin>>crc;														//crc - polinômio do gerador
 
-	encoded += data;												//encoded bits are initialized to data bits
+	encoded += data;			//bits codificados são inicializados em bits de dados
 
 	int datalen = data.length();
 	int crclen = crc.length();
 
 	for(int i=1 ; i <= (crclen - 1) ; i++)
-		encoded += '0';												//appending length of (generator polinomial -1) number of zeros to encoded bits
+		encoded += '0';			//anexando comprimento de (gerador polinomial -1) número de zeros aos bits codificados
 
-	encoded = xorfun(encoded , crc);								//performing bitwise xor to obtain
+	encoded = xorfunction(encoded , crc);	//executando xor bit a bit para obter
 
-	cout<<"Checksum generated is: ";
-	cout<<encoded.substr(encoded.length() - crclen + 1)<<endl<<endl;					//data bits + checksum bit is what going to be sent to reciever
-	cout<<"Message to be Transmitted over network: ";
-	cout<<data + encoded.substr(encoded.length() - crclen + 1);    					//this is the message going to be sent to the Reciever
-
-
-
-
-	cout<<endl<<"---------------Reciever Side-----------------"<<endl;
+	cout<<"A soma de verificação gerada é: ";
+	cout<<encoded.substr(encoded.length() - crclen + 1)<<endl<<endl;   //bits de dados + bit de soma de verificação é o que será enviado para o receptor
+	cout<<"Mensagem a ser transmitida: ";
+	cout<<data + encoded.substr(encoded.length() - crclen + 1);    	//esta é a mensagem que será enviada ao receptor
 
 
 
-	cout<<"Enter the message recieved: "<<endl;
-	string msg;																//Reciever enters the recieved message
+
+	cout<<endl<<"---------------Receptor-----------------"<<endl;
+
+
+    string msg;
+	cout<<"Digite a mensagem recebida: "<<endl;             //O receptor entra na mensagem recebida
 	cin>>msg;
 
-	msg = xorfun( msg , crc);												//bitwise xor is performed between recieved bits and the generator crc bits
+	msg = xorfunction( msg , crc);
 
-	for( char i : msg.substr(msg.length() - crclen + 1))					//after performing xor , if the last few bits are zero then there's no error in transmission
+	for( char i : msg.substr(msg.length() - crclen + 1))	//depois de executar xor, se os últimos bits forem zero, não haverá erro na transmissão
 		if( i != '0' )
 			{
-				cout<<"Error in communication "<<endl;						//if bits not zero ; ERROR IN TRANSMISSION
+				cout<<"Erro na transmissão!!! "<<endl;	//se bits não forem zero; ERRO NA TRANSMISSÃO
 				return 0;
 			}
 
-	cout<<"No Error !"<<endl;												//else NO ERROR
+	cout<<"Nenhum erro!"<<endl;												//bit a bit xor é realizado entre os bits recebidos e os bits crc do gerador
 	return 0;
 }
