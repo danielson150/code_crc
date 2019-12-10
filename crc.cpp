@@ -57,7 +57,7 @@ int main()
 	cout<<endl<<"---------------Receptor-----------------"<<endl;
 
 
-    string msg;
+    	string msg;
 	cout<<"Digite a mensagem recebida: "<<endl;             //O receptor entra na mensagem recebida
 	cin>>msg;
 
